@@ -88,9 +88,7 @@ export const searchFlightByNumber = async (
       params: {
         access_key: API_KEY,
         flight_iata: flightNumber,
-        // dep_iata: "HYD",
-        // arr_iata: "AMD",
-        flight_date: "2025-07-05",
+        flight_date: currentDate,
         limit,
         offset,
       },
