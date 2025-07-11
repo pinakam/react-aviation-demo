@@ -87,10 +87,10 @@ export const searchFlightByNumber = async (
     const response = await axios.get(`${API_BASE_URL}/flights`, {
       params: {
         access_key: API_KEY,
-        flight_number: flightNumber,
-        dep_iata: "HYD",
-        arr_iata: "AMD",
-        // flight_date: "2025-07-05",
+        flight_iata: flightNumber,
+        // dep_iata: "HYD",
+        // arr_iata: "AMD",
+        flight_date: "2025-07-05",
         limit,
         offset,
       },
