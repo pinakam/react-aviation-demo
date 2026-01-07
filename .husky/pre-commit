@@ -5,11 +5,12 @@ echo "🔒 Running pre-commit checks..."
 # --------------------------------------------------
 # 1. Block committing any .env files
 # --------------------------------------------------
-if git diff --cached --name-only | grep -E '(^|/)\.env(\.|$)'; then
-  echo "❌ Commit blocked: .env files must NOT be committed."
-  echo "➡️  Remove .env files from staging before committing."
+if git diff --cached --name-only | grep -E '(^|/)\.env(\.|$)' | grep -vE '\.env\.example$'; then
+  echo "❌ Commit blocked: real .env files must NOT be committed."
+  echo "✅ .env.example is allowed."
   exit 1
 fi
+
 
 # --------------------------------------------------
 # 2. Scan staged content for secrets using Gitleaks
