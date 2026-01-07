@@ -1,0 +1,44 @@
+#!/bin/sh
+
+echo "🔒 Running pre-commit checks..."
+
+# --------------------------------------------------
+# 1. Block committing any .env files
+# --------------------------------------------------
+if git diff --cached --name-only | grep -E '(^|/)\.env(\.|$)'; then
+  echo "❌ Commit blocked: .env files must NOT be committed."
+  echo "➡️  Remove .env files from staging before committing."
+  exit 1
+fi
+
+# --------------------------------------------------
+# 2. Scan staged content for secrets using Gitleaks
+# --------------------------------------------------
+echo "🔍 Scanning staged files for sensitive information..."
+
+git diff --cached > /tmp/gitleaks.patch
+
+gitleaks detect \
+  --source /tmp/gitleaks.patch \
+  --config .gitleaks.toml \
+  --no-git \
+  --verbose
+
+if [ $? -ne 0 ]; then
+  echo "❌ Commit blocked: Sensitive information detected."
+  echo "➡️  Remove secrets or move them to environment variables."
+  exit 1
+fi
+
+# --------------------------------------------------
+# 3. Run lint-staged (code quality)
+# --------------------------------------------------
+echo "🧹 Running lint-staged..."
+npx lint-staged
+
+if [ $? -ne 0 ]; then
+  echo "❌ Commit blocked: lint-staged failed."
+  exit 1
+fi
+
+echo "✅ Pre-commit checks passed."

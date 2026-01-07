@@ -1,0 +1,62 @@
+title = "Universal Secret Detection Policy"
+
+# ==================================================
+# 1. Enable ALL default rules (AWS, GitHub, JWT, etc.)
+# ==================================================
+[extend]
+useDefault = true
+
+# ==================================================
+# 2. Generic High-Entropy Secrets (unknown providers)
+# ==================================================
+[[rules]]
+id = "generic-high-entropy-secret"
+description = "Generic high-entropy secret"
+regex = '''(?i)[a-z0-9_\-]{32,}'''
+entropy = 4.0
+severity = "HIGH"
+tags = ["generic", "entropy", "secret"]
+
+# ==================================================
+# 3. Hardcoded Secrets via Keywords (app-level)
+# ==================================================
+[[rules]]
+id = "hardcoded-secret-keyword"
+description = "Hardcoded secret/token/api key"
+regex = '''(?i)(secret|api[_-]?key|token|private[_-]?key|auth[_-]?token|access[_-]?key)\s*[:=]\s*['"][^'"]{12,}['"]'''
+severity = "HIGH"
+tags = ["keyword", "hardcoded"]
+
+# ==================================================
+# 4. JWT-like Tokens (explicit)
+# ==================================================
+[[rules]]
+id = "jwt-like-token"
+description = "JWT-like token"
+regex = '''eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+'''
+severity = "HIGH"
+tags = ["jwt", "token"]
+
+# ==================================================
+# 5. Private Keys (PEM, RSA, EC, OpenSSH)
+# ==================================================
+[[rules]]
+id = "private-key"
+description = "Private key material"
+regex = '''-----BEGIN (RSA|EC|DSA|OPENSSH)? ?PRIVATE KEY-----'''
+severity = "CRITICAL"
+tags = ["private-key"]
+
+# ==================================================
+# 6. SAFE Allowlist (placeholders only — NO environments)
+# ==================================================
+[allowlist]
+description = "Ignore obvious placeholders and documentation"
+regexes = [
+  '''(?i)(example|dummy|sample|placeholder|changeme|your[_-]?key|your[_-]?secret)'''
+]
+paths = [
+  '''.*\.md$''',
+  '''.*\.spec\..*''',
+  '''.*\.test\..*'''
+]
