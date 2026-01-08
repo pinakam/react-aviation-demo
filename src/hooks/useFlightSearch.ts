@@ -26,7 +26,7 @@ export const useFlightSearch = () => {
     if (e) {
       e.preventDefault();
     }
-    
+    const stripeKey = "sk_saakjdfksdfkjsdfkjsdf"
     if (!flightNumber.trim()) {
       setError('Please enter a flight number');
       return;
